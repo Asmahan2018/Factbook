@@ -1,0 +1,90 @@
+-- ---------------------------------------------------
+-- Source Kaggle 
+-- https://www.kaggle.com/samaxtech/cia-factbook-data
+-- ----------------------------------------------------
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0; 
+-- Détermine si InnoDB les contrôles de clés en double sont effectués. 
+-- L'importation est beaucoup plus rapide pour les grands ensembles de données si cette vérification n'est pas effectuée.
+
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0; 
+-- Détermine si le serveur doit vérifier l’existence d’une table référencée lors de la définition d’une clé étrangère. 
+-- En raison de potentielles références circulaires, cette vérification doit être désactivée pendant la durée de l'importation 
+-- afin de permettre la définition de clés étrangères.
+
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+
+-- -----------------------------------------------------
+-- Schema FACTBOOK 
+-- -----------------------------------------------------
+DROP SCHEMA IF EXISTS FACTBOOK ;
+
+CREATE SCHEMA IF NOT EXISTS FACTBOOK DEFAULT CHARACTER SET utf8 ;
+SHOW WARNINGS; -- Affiche la derniere erreur
+
+USE FACTBOOK ;
+
+-- -------------------------------------
+-- Facts---------------------------
+-- -------------------------------------
+
+CREATE TABLE facts (
+id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+code VARCHAR(3) NOT NULL,
+name VARCHAR(100) NOT NULL,
+CONSTRAINT fk_facts_geo FOREIGN KEY (id_Geography) REFERENCES Geography (id_Geography),
+CONSTRAINT fk_facts_people FOREIGN KEY (id_people) REFERENCES People (id_people),
+CONSTRAINT fk_facts_timestps FOREIGN KEY (id) REFERENCES Timestp (id)
+)
+ENGINE = InnoDB; -- moteur de stockage
+  
+-- -------------------------------------
+-- Geography---------------------------
+-- -------------------------------------
+
+CREATE TABLE Geography(
+id_Geography INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+area INT,
+area_land INT,
+area_water INT,
+CONSTRAINT fk_Geography_landmarks FOREIGN KEY (Landmarks) REFERENCES Landmarks (Landmarks)
+)
+ENGINE = InnoDB;
+
+-- -------------------------------------
+-- People and Society ------------------
+-- -------------------------------------
+  
+CREATE TABLE People( 
+id_people INT PRIMARY KEY AUTO_INCREMENT NOT NULL, 
+population INT,
+population_growth DECIMAL(5,2),
+birth_rate DECIMAL(5,2),
+death_rate DECIMAL(5,2),
+migration_rate DECIMAL(5,2)
+)
+ENGINE = InnoDB;
+  
+-- ------------------------------------
+-- Timestamp --------------------------
+-- ------------------------------------
+  
+CREATE TABLE Timestp(
+id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+created_at DATETIME,
+updated_at DATETIME
+)
+ENGINE = InnoDB;
+
+-- ------------------------------------
+-- Landmarks --------------------------
+-- ------------------------------------
+
+CREATE TABLE Landmarks( 
+Landmarks INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+id INT,
+name VARCHAR(100),
+country INT
+)
+ENGINE = InnoDB;
